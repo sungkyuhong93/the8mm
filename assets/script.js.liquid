@@ -1,0 +1,68 @@
+
+function checkTime(i) {
+  if (i < 10) {
+    i = "0" + i;
+  }
+  return i;
+}
+
+function startTime() {
+  var today = new Date();
+  var h = today.getHours();
+  var m = today.getMinutes();
+  var s = today.getSeconds();
+  // add a zero in front of numbers<10
+  m = checkTime(m);
+  s = checkTime(s);
+  document.getElementById('clockbox').innerHTML = h + ":" + m + ":" + s;
+  t = setTimeout(function() {
+    startTime()
+  }, 500);
+}
+startTime();
+
+
+
+
+function GetKrClock(){
+var tzOffset = +9;//set this to the number of hours offset from UTC
+
+var s=new Date();
+var dx=s.toGMTString();
+dx=dx.substr(0,dx.length -3);
+s.setTime(Date.parse(dx))
+s.setHours(s.getHours()+tzOffset);
+  
+  
+var nhour=s.getHours(),nmin=s.getMinutes(),nsec=s.getSeconds(),ap;
+
+if(nhour==0){ap=" AM";nhour=12;}
+else if(nhour<12){ap=" AM";}
+else if(nhour==12){ap=" PM";}
+else if(nhour>12){ap=" PM";nhour-=12;}
+
+if(nmin<=9) nmin="0"+nmin;
+if(nsec<=9) nsec="0"+nsec;
+
+document.getElementById('KrClockBox').innerHTML=""+nhour+":"+nmin+":"+nsec;
+}
+
+window.onload=function(){
+GetKrClock();
+setInterval(GetKrClock,1000);
+}
+
+
+
+
+$(".mobile-item").click(function () {
+        //Toggle the child but don't include them in the hide selector using .not()
+        $('.mobile-item' > '.mobile-collections').not($(this).children(".mobile-collections").toggle()).hide();
+		
+    });
+
+
+
+
+
+   

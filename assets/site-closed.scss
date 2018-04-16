@@ -1,0 +1,40 @@
+html {
+ background-color: #eae8df;
+  overflow: hidden;
+}
+
+body {
+ background-color: #eae8df !important; 
+}
+
+.canceled-container {
+ display: flex;
+ flex-direction: column;
+  justify-content: space-around;
+  height: 100vh;
+}
+
+.logo-img-canceled {
+	width: 10rem;
+  	display: block;
+  	margin-left: auto;
+  margin-right: auto;
+  margin-top: 1rem;
+  
+  
+}
+
+.canceled-description {
+  text-align: center;
+  font-family: 'Helvetica Neue';
+  text-transform: uppercase;
+  font-weight: 700;
+  margin-top: -10rem;
+}
+
+.instagram-canceled {
+ width: 2rem; 
+ display: block;
+  margin: auto;
+  align-self: flex-end;
+}

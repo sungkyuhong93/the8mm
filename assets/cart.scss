@@ -1,0 +1,64 @@
+.subtotal-update {
+	text-align: right;
+  width: 100%;
+}
+
+.btn {
+  text-transform: uppercase;
+  font-family: 'Helvita Neue"; 
+}
+
+.update-cart {
+   text-transform: uppercase;
+  font-family: 'Helvita Neue"; 
+}
+
+.cart-title {
+ font-family: 'Helvita Neue";
+}
+
+
+
+
+.cart-container {
+ float: right;
+  margin-top: -17rem;
+  margin-right: 5%;
+  width: 80%;
+}
+
+
+@media (max-width: 980px) {
+  .cart-container {
+   margin-top: 1rem; 
+    margin-right: 0rem;
+    margin-left: 0rem;
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  	.cart-title {
+     text-align: center; 
+    }
+  
+ 	.cart__image {
+     margin-right: 2rem;
+    }
+  
+  
+  .cart-product-size {
+   margin-right: 5rem;
+  }
+  
+  .cart-product-title {
+  	text-align: center;
+  }
+  
+  .cart__remove {
+ 
+  }
+  
+}
+  
+  

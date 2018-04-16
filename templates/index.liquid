@@ -1,0 +1,73 @@
+<!-- /templates/index.liquid -->
+{% comment %}
+
+  This is the homepage of your site.
+
+  More info on global variables (available on all templates):
+    - http://docs.shopify.com/themes/liquid-variables/global
+{% endcomment %}
+
+{% include 'navbar' %}
+
+	
+
+		<div class="lookbook-jumbo">
+  			<img src="{{ 'front-austin.jpg' | asset_url }}" alt="lookbook-img" class="lookbook-jumbo-img">
+		</div>
+          
+    
+
+<!-- //site-nav -->
+
+
+<!--lookbook-3images-->
+<div class="lookbook">
+   <div class="lookbook-img-contain">
+        <img src="{{ 'austin1.jpg' | asset_url }}" alt="lookbook-img-1" class="lookbook-img pic1">
+      </div>
+
+      <div class="lookbook-img-contain">
+        <img src="{{ 'clothes.jpg' | asset_url }}" alt="lookbook-img-2" class="lookbook-img pic2">
+      </div>
+
+      <div class="lookbook-img-contain">
+        <img src="{{ 'austin4.jpg' | asset_url }}" alt="lookbook-img-3" class="lookbook-img pic3">
+      </div>
+
+</div>
+
+
+<div class="front-grid">
+  {% comment %}
+    Loop through products in your Frontpage collection.
+    This collection is created by default, but you must add products to it.
+  {% endcomment %}
+  {% for product in collections.frontpage.products limit:6 %}
+
+    {% comment %}
+      Change the grid item width by using classes from the grid in
+      the grid_item_width variable.
+
+      Example:
+        - {% assign grid_item_width = 'large--one-half medium--one-half' %}
+    {% endcomment %}
+    {% assign grid_item_width = 'large--one-half medium--one-half' %}
+    {% include 'product-grid-item' %}
+
+  {% else %}
+    {% comment %}
+      For onboarding new users to your theme, we add some default products and onboarding tutorials to help populate their store
+    {% endcomment %}
+    {% unless emptyState %}
+      {{ 'theme-onboarding.css' | global_asset_url | stylesheet_tag }}
+      {% assign emptyState = true %}
+    {% endunless %}
+
+    {% include 'onboarding-featured-products' %}
+
+  {% endfor %}
+  </div>
+
+
+
+

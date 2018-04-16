@@ -1,0 +1,199 @@
+<!-- /templates/product.liquid -->
+{% comment %}
+
+  Rich snippets (itemscope, itemtype, etc.) for products are a theme requirement,
+  and allow search engines to easily understand what the content is.
+
+  For more information on these Scheme.org tags, visit:
+    - http://schema.org/docs/gs.html
+
+{% endcomment %}
+
+
+<div itemscope itemtype="http://schema.org/Product">
+
+  <meta itemprop="url" content="{{ shop.url }}{{ product.url }}">
+  <meta itemprop="image" content="{{ product.featured_image.src | img_url: 'grande' }}">
+
+  {% comment %}
+    Get first variant, or deep linked one
+  {% endcomment %}
+  {% assign current_variant = product.selected_or_first_available_variant %}
+
+  {% include 'navbar' %}
+
+  <div class="product-single">
+    <div class="grid__item large--one-half text-center">
+      <div class="product-single__photos" id="ProductPhoto">
+        {% assign featured_image = current_variant.featured_image | default: product.featured_image %}
+        <img src="{{ featured_image | img_url: 'large' }}" alt="{{ featured_image.alt | escape }}" id="ProductPhotoImg">
+      </div>
+
+      {% comment %}
+        Create thumbnails if we have more than one product image
+      {% endcomment %}
+      {% if product.images.size > 1 %}
+        <ul class="product-single__thumbnails grid-uniform" id="ProductThumbs">
+
+          {% for image in product.images %}
+            <li class="grid__item one-quarter">
+              <a href="{{ image.src | img_url: 'large' }}" class="product-single__thumbnail">
+                <img src="{{ image.src | img_url: 'compact' }}" alt="{{ image.alt | escape }}">
+              </a>
+            </li>
+          {% endfor %}
+
+        </ul>
+      {% endif %}
+    </div>
+
+    <div class="product-grid">
+
+      <h1 itemprop="name" class="product-title">{{ product.title }}</h1>
+      
+      {% if product.available %} 
+
+            <strong>{{ product.price | money_without_trailing_zeros }}</strong>
+
+            {% else %}
+
+            <strong style="color:#ccc">
+
+            {{ product.price | money_without_trailing_zeros }}
+
+            </strong> 
+
+            <span id="SoldOut">Sold Out!</span>
+
+            {% endif %}
+
+      <div itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+        <meta itemprop="priceCurrency" content="{{ shop.currency }}">
+
+        <link itemprop="availability" href="http://schema.org/{% if product.available %}InStock{% else %}OutOfStock{% endif %}">
+
+        {% comment %}
+          ID addToCartForm is a selector for the ajax cart plugin
+        {% endcomment %}
+               
+        
+        {% assign option_to_match = settings.option_to_match %}
+{% assign option_index = 0 %}
+{% for option in product.options %}
+  {% if option == option_to_match %}
+    {% assign option_index = forloop.index0 %}
+  {% endif %}
+{% endfor %}
+
+<form action="/cart/add" method="post" class="clearfix product_form" data-money-format="{{ shop.money_format }}" data-option-index="{{ option_index }}" id="product-form-{{ product.id }}">
+  {% if product.options.size > 1 %}
+    <div class="select">
+
+        {% for variant in product.variants %}
+            <input type="radio" name="id" value="{{variant.id}}" id="radio_{{variant.id}}" {%if forloop.first%} checked="checked" {%endif%} />
+            <label for="radio_{{variant.id}}">{{ variant.title }} - {{ variant.price | money }}</label>
+            <br />
+        {% endfor %}
+
+    </div>
+  {% elsif product.options.size == 1 and product.variants.size > 1 %}
+          <div class="select">
+            {% for variant in product.variants %}
+              <input  class="radio-buttons" type="radio" name="id" value="{{variant.id}}" id="radio_{{variant.id}}" {%if forloop.first%} checked="checked" {%endif%} />
+                <label for="radio_{{variant.id}}">{{ variant.title }}</label>
+               <br />
+            {% endfor %}
+          </div>
+            {% else %}
+              <input type="hidden" name="id" value="{{ product.variants.first.id }}" />
+            {% endif %}
+ 
+  {% if product.available %}
+     {% if settings.display_product_quantity %}
+       <label for="quantity">Quantity:</label>
+       <input type="number" min="1" size="2" class="quantity" name="quantity" id="quantity" value="1" />
+    {% endif %}
+    <div class="purchase clearfix {% if settings.display_product_quantity %}inline_purchase{% endif %}">
+      {% if settings.cart_return == 'back' %}
+        <input type="hidden" name="return_to" value="back" />
+      {% endif %}
+      <input type="submit" name="add" value="Add to Cart" id="add-to-cart" class="action_button" />
+    </div>
+  {% endif %}
+</form>
+
+      </div>
+
+      <div class="product-description rte" itemprop="description">
+        {{ product.description }}
+      </div>
+
+      {% comment %}
+        If the user is on a collection product page (ie with /collections/collection-handle/products/product-handle)
+        in the URL, we can show next/previous links to other products in the collection.
+      {% endcomment %}
+      {% if collection %}
+        {% if collection.previous_product or collection.next_product %}
+          <p>
+            {% if collection.previous_product %}
+              <span class="left">
+                {{ 'products.general.previous_product_html' | t | link_to: collection.previous_product }}
+              </span>
+            {% endif %}
+            {% if collection.next_product %}
+              <span class="right">
+                {{ 'products.general.next_product_html' | t | link_to: collection.next_product }}
+              </span>
+            {% endif %}
+          </p>
+        {% endif %}
+      {% endif %}
+
+    </div>
+  </div>
+
+</div>
+
+{% comment %}
+  To take advantage of a callback on the select dropdown, add option_selection.js
+  and customize the JS in timber.productPage as needed.
+
+  Currently, timber.productPage does the following:
+    - Hides your <select> tag from above
+    - Breaks out the product variants into separate product options, if more than one exists
+    - Generates a <select> tag for each product option
+    - Enables/disables elements based on variant availability
+
+  Callback notes:
+    - Keep the callback available to the global scope (window.selectCallback) so that advanced
+      addons can override it.
+      * E.g. multiple currencies http://docs.shopify.com/manual/configuration/store-customization/currencies-and-translations/currencies/how-to-toggle-between-two-currencies
+{% endcomment %}
+{{ 'option_selection.js' | shopify_asset_url | script_tag }}
+<script>
+  var selectCallback = function(variant, selector) {
+    timber.productPage({
+      money_format: "{{ shop.money_format }}",
+      variant: variant,
+      selector: selector
+    });
+  };
+
+  jQuery(function($) {
+    new Shopify.OptionSelectors('productSelect', {
+      product: {{ product | json }},
+      onVariantSelected: selectCallback,
+      enableHistoryState: true
+    });
+
+    // Add label if only one product option and it isn't 'Title'. Could be 'Size'.
+    {% if product.options.size == 1 and product.options.first != 'Title' %}
+      $('.selector-wrapper:eq(0)').prepend('<label for="productSelect-option-0">{{ product.options.first | escape }}</label>');
+    {% endif %}
+
+    // Hide selectors if we only have 1 variant and its title contains 'Default'.
+    {% if product.variants.size == 1 and product.variants.first.title contains 'Default' %}
+      $('.selector-wrapper').hide();
+    {% endif %}
+  });
+</script>
